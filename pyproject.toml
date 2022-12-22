@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "py_open_schema"
+version = "0.1.0"
+description = ""
+authors = ["Valerii Volkov"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+marshmallow = "^3.19.0"
+marshmallow-dataclass = "^8.5.10"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+flask = "^2.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

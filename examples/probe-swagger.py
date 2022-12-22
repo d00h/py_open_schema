@@ -40,7 +40,7 @@ class Success:
 
 @route("user_get") \
     .doc("какая то фигня") \
-    .path("/user/<user_id>/", methods=["GET"]) \
+    .request("/user/<user_id>/", methods=["GET"]) \
     .response(status_code=200, model=Success) \
     .response(status_code=400, model=UserNotFound)
 def endpoint(user_id):

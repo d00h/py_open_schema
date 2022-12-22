@@ -1,33 +1,57 @@
-from .models import SchemaEndpoint
-from .registry import SchemaRegistry
+from typing import List
+
+from .models import SpecRequest, SpecResponse, SpecRoute
+from .registry import SpecRegistry
 
 
-class SchemaEndpointBuilder:
+class SpecRouteBuilder:
 
-    endpoint: SchemaEndpoint
+    name: str
+    tag: str
+    doc: str = None
+    request: SpecRequest = None
+    responses: List[SpecResponse] = None
 
-    def __init__(self, endpoint):
-        self.endpoint = SchemaEndpoint(endpoint)
+    def __init__(self, name: str):
+        self.name = name
 
-    def doc(self, text: str) -> 'SchemaEndpointBuilder':
-        self.endpoint.doc = text
+    def doc(self, text: str) -> 'SpecRouteBuilder':
+        self.doc = text
         return self
 
-    def path(self, path: str, methods: list = None) -> 'SchemaEndpointBuilder':
-        self.endpoint.request.path = path
-        self.endpoint.request.methods = methods or ['GET']
+    def tag(self, text: str) -> 'SpecRouteBuilder':
+        self.tag = text
         return self
 
-    def body(self, model: type) -> 'EndpointBuilder':
-        self.endpoint.request.body = model
+    def request(self, path: str, methods: list = None, body=None) -> 'SpecRouteBuilder':
+        if self.request is not None:
+            raise KeyError("dublicate 'request'")
+        self.request = SpecRequest(
+            path=path,
+            methods=methods or ["GET"],
+            body=body,
+        )
         return self
 
-    def response(self, status_code: int, model: type = None, doc: str = None) -> 'SchemaEndpointBuilder':
-        self.endpoint.add_response(status_code=status_code, model=model, doc=doc)
+    def response(
+            self, status_code: int, model: type = None, mime_type: str = None,
+            doc: str = None
+    ) -> 'SpecRouteBuilder':
+        if self.response is None:
+            self.response = []
+        response = SpecResponse(
+            status_code=status_code,
+            model=model,
+            mime_type=mime_type or "application/json",
+            doc=doc,
+        )
+        self.responses.append(response)
         return self
 
     def __call__(self, fn):
-        print("register")
-        registry = SchemaRegistry()
-        self.endpoint.fn = fn
-        registry.append(self.endpoint)
+        registry = SpecRegistry()
+        spec = SpecRoute(
+            name=self.name, doc=self.doc, tag=self.tag,
+            request=self.request, responses=self.request
+        )
+        registry.append(spec, fn)

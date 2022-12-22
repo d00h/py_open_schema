@@ -1,10 +1,18 @@
+from dataclasses import dataclass
 
-from Typing import Dict, Iterable
+from typing import Callable, Dict, Iterable
 
-from .models import SchemaEndpoint
+from .models import SpecRoute
 
 
-class SchemaRegistry:
+@dataclass
+class SpecRegistryItem:
+
+    spec: SpecRoute
+    fn: Callable
+
+
+class SpecRegistry:
 
     _instance = None
 
@@ -14,18 +22,19 @@ class SchemaRegistry:
             cls._instance = object.__new__(cls)
         return cls._instance
 
-    endpoints: Dict[str, SchemaEndpoint]
+    specs: Dict[str, SpecRegistryItem]
 
     def __init__(self):
-        self.endpoints = {}
+        self.specs = {}
 
-    def append(self, endpoint: SchemaEndpoint):
-        if endpoint.name in self.endpoints:
-            raise KeyError(endpoint.name)
-        self.endpoints[endpoint.name] = endpoint
+    def append(self, spec: SpecRoute, fn: Callable):
+        name = spec.name
+        if name in self.specs:
+            raise KeyError(name)
+        self.specs[name] = SpecRegistryItem(spec=spec, fn=fn)
 
-    def __getitem__(self, name: str) -> SchemaEndpoint:
+    def __getitem__(self, name: str) -> SpecRegistryItem:
         return self.endpoints[name]
 
-    def __iter__(self) -> Iterable[SchemaEndpoint]:
-        return iter(self.endpoints.values())
+    def __iter__(self) -> Iterable[SpecRegistryItem]:
+        return iter(self.specs.values())

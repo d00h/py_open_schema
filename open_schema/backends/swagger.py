@@ -1,4 +1,5 @@
-from open_schema import SchemaRegistry, SchemaEndpoint
+from open_schema import SpecRegistry
+
 
 
 def generate_swagger() -> dict:
@@ -6,7 +7,7 @@ def generate_swagger() -> dict:
     return {
        "swagger": "2.0",
        "routes": [
-          generate_swagger_endpoint(endpoint) for endpoint in registry
+          generate_swagger_endpoint(endpoint.spec) for endpoint in registry
        ]
     }
 

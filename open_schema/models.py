@@ -1,7 +1,9 @@
-from typing import List, Optional, Type, Callable
+from dataclasses import dataclass
+from typing import Callable, List, Optional, Type
 
 
-class SchemaRequest:
+@dataclass
+class SpecRequest:
 
     path: Optional[str]
     methods: List[str]
@@ -9,30 +11,23 @@ class SchemaRequest:
     body: Optional[Type]
 
 
-class SchemaResponse:
+@dataclass
+class SpecResponse:
 
-    doc: Optional[str]
     status_code: int
+    doc: Optional[str]
+
+    mime_type: str
     model: Optional[Type]
 
 
-class SchemaEndpoint:
+@dataclass
+class SpecRoute:
 
     name: str
-    doc: Optional[str] = None
+    doc: Optional[str]
+    tag: Optional[str]
 
-    request: SchemaRequest
-    responses: List[SchemaResponse]
-    fn: Callable
+    request: SpecRequest
+    responses: List[SpecResponse]
 
-    def __init__(self, name: str):
-        self.name = name
-        self.request = SchemaRequest()
-        self.responses = []
-
-    def add_response(self, status_code: int, model: type, doc: str):
-        response = SchemaResponse()
-        response.status_code = status_code
-        response.model = model
-        response.doc = doc
-        self.responses.append(response)

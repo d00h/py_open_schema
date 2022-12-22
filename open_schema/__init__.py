@@ -1,11 +1,11 @@
-from .decorator import SchemaEndpointBuilder as route
-from .models import SchemaEndpoint, SchemaRequest, SchemaResponse
-from .registry import SchemaRegistry
+from .decorator import SpecRouteBuilder as route
+from .models import SpecRequest, SpecResponse, SpecRoute
+from .registry import SpecRegistry
 
 __all__ = [
     "route",
-    "SchemaRegistry",
-    "SchemaRequest",
-    "SchemaResponse",
-    "SchemaEndpoint",
+    "SpecRegistry",
+    "SpecRequest",
+    "SpecResponse",
+    "SpecRoute",
 ]
