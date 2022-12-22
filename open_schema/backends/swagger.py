@@ -1,17 +1,15 @@
-from open_schema import SpecRegistry
-
+from open_schema import SpecRegistry, SpecRoute
 
 
 def generate_swagger() -> dict:
-    registry = SchemaRegistry()
+    registry = SpecRegistry()
     return {
-       "swagger": "2.0",
-       "routes": [
-          generate_swagger_endpoint(endpoint.spec) for endpoint in registry
-       ]
+        "swagger": "2.0",
+        "routes": [
+            generate_swagger_endpoint(endpoint.spec) for endpoint in registry
+        ]
     }
 
 
-def generate_swagger_endpoint(endpoint: SchemaEndpoint) -> dict:
+def generate_swagger_endpoint(endpoint: SpecRoute) -> dict:
     return {}
-

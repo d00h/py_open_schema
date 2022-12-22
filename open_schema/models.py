@@ -30,4 +30,3 @@ class SpecRoute:
 
     request: SpecRequest
     responses: List[SpecResponse]
-

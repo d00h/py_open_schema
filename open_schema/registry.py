@@ -1,28 +1,17 @@
-from dataclasses import dataclass
-
-from typing import Callable, Dict, Iterable
+from functools import lru_cache
+from typing import Callable, Iterable, NamedTuple
 
 from .models import SpecRoute
 
 
-@dataclass
-class SpecRegistryItem:
+class SpecRegistryItem(NamedTuple):
 
     spec: SpecRoute
     fn: Callable
 
 
+@lru_cache(maxsize=None)
 class SpecRegistry:
-
-    _instance = None
-
-    @classmethod
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = object.__new__(cls)
-        return cls._instance
-
-    specs: Dict[str, SpecRegistryItem]
 
     def __init__(self):
         self.specs = {}
@@ -34,7 +23,7 @@ class SpecRegistry:
         self.specs[name] = SpecRegistryItem(spec=spec, fn=fn)
 
     def __getitem__(self, name: str) -> SpecRegistryItem:
-        return self.endpoints[name]
+        return self.specs[name]
 
     def __iter__(self) -> Iterable[SpecRegistryItem]:
         return iter(self.specs.values())

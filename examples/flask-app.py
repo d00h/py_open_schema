@@ -4,7 +4,7 @@ from flask import Flask
 from marshmallow_dataclass import dataclass
 
 from open_schema import route
-from open_schema.backends.flask import register_endpoints
+from open_schema.backends.flask import register_routes
 from open_schema.backends.swagger import generate_swagger
 
 
@@ -48,5 +48,5 @@ def apispec():
 
 if __name__ == '__main__':
     app = Flask(__name__)
-    register_endpoints(app)
+    register_routes(app)
     app.run(port=5000, host="127.0.0.1")

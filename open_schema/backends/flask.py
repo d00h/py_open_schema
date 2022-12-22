@@ -1,23 +1,39 @@
-from flask import Flask, jsonify
-from flask import request as http_request
+import json
+from typing import Callable
 
-from open_schema import SchemaEndpoint, SchemaRegistry
+from flask import Flask, request
+
+from open_schema import SpecRegistry, SpecRoute
+
+# from flask import request as http_request
 
 
-def create_view_func(app: Flask, endpoint: SchemaEndpoint):
-    def wrapper():
-        schema_request = endpoint.request
-        body = http_request.json
-        return app.response_class(f"{dumps(data, indent=indent, separators=separators)}\n",
+def create_validate_func(spec: SpecRoute):
+    def validator(**kwargs) -> dict:
+        return kwargs
+    return validator
+
+
+def create_view_func(app: Flask, spec: SpecRoute, fn: Callable):
+    ResponseClass = app.response_class
+    validate = create_validate_func(spec)
+
+    def wrapper(*args, **kwargs):
+        status, data = fn(**validate(request))
+        return ResponseClass(
+            json.dumps(data), status=status, mimetype="application/json"
+        )
 
     return wrapper
 
-def register_endpoints(app: Flask):
-    registry=SchemaRegistry()
 
-    for endpoint in registry:  # type: SchemaEndpoint
+def register_routes(app: Flask):
+    registry = SpecRegistry()
+    for spec, fn in registry:  # type: SpecRoute
+        print(spec.request.path)
         app.add_url_rule(
-            endpoint.request.path,
-            endpoint=endpoint.name,
-            view_func=create_view_func(endpoint)
+            spec.request.path,
+            endpoint=spec.name,
+            view_func=create_view_func(app, spec, fn),
+            methods=spec.request.methods,
         )
