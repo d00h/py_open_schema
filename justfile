@@ -13,8 +13,9 @@ pytest NAME='tests/':
 example NAME:
     PYTHONPATH={{ justfile_directory() }} poetry run python examples/{{ NAME }}.py
 
-pwd: 
-    poetry run echo 
+lint:
+    poetry run python -m flake8 .
+
 
 
 

@@ -4,13 +4,20 @@ from typing import Callable
 from flask import Flask, request
 
 from open_schema import SpecRegistry, SpecRoute
+from open_schema.mapper import Mapper
 
 # from flask import request as http_request
 
 
-def create_validate_func(spec: SpecRoute):
-    def validator(**kwargs) -> dict:
-        return kwargs
+def create_validate_func(spec: SpecRoute, fn):
+    converters = []
+    mappers = Mapper.create(
+        src={
+            "body": spec.request.body,
+        },
+        dst={
+        })
+
     return validator
 
 
@@ -18,8 +25,16 @@ def create_view_func(app: Flask, spec: SpecRoute, fn: Callable):
     ResponseClass = app.response_class
     validate = create_validate_func(spec)
 
+    converters = Mapper.find_converters(
+        src_annotations={
+            "body": spec.request.body,
+            **kwargs,
+        },
+        dst_function=fn)
+    mapper = Mapper.create_kwargs_mapper(converters)
+
     def wrapper(*args, **kwargs):
-        status, data = fn(**validate(request))
+        status, data = fn(**mapper(request))
         return ResponseClass(
             json.dumps(data), status=status, mimetype="application/json"
         )

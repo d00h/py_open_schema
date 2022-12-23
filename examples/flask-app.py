@@ -21,7 +21,7 @@ class Answer:
 
 
 @route("user_get") \
-    .request("/user/<user_id>/", methods=["GET"]) \
+    .request("/user/<user_id:int>/", methods=["GET"], body="<user:User>") \
     .response(200, Answer(success=True, data=User)) \
     .response(404, Answer(success=True, code="USER_NOT_FOUND"))
 def user_get(user_id):
